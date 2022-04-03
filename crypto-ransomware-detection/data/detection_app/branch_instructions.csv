@@ -1,4 +1,3 @@
-time-interval,counter-value,event,runtime,percentage
 10.307009509,309933,branch-instructions,65909282,80.01
 10.317362065,989338,branch-instructions,65917447,80.02
 10.327725356,386434,branch-instructions,65911191,80.01
