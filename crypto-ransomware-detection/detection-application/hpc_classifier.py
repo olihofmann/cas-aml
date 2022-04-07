@@ -7,6 +7,7 @@ import tempfile
 from colorama import Fore
 from pyts.image import GramianAngularField
 from PIL import Image
+import torch
 from model import BaselineNetwork
 from torchvision import transforms
 
@@ -41,9 +42,15 @@ class HpcClassifier:
         image = skimage.io.imread(f"{self.temp_file.name}.jpg")
         image = self.transformation(image)
 
-        prediction = self.model.predict(image.unsqueeze_(0))
+        prediction, confidence = self.model.predict(image.unsqueeze_(0))
+        confidence_score: float = confidence.item()
         category: str = self.IDX_TO_CLASS[prediction.item()]
-        if category == "benign":
-            print(Fore.GREEN, category)
+
+        if category == "ransomware" and confidence_score >= 0.7:
+            print(Fore.RED, f"Ransomware attack, confidence score {confidence_score}")
+        elif category == "ransomware" and confidence_score < 0.7:
+            print(Fore.YELLOW, f"Ransomware attack or high compute work, confidence score {confidence_score}")
         else:
-            print(Fore.RED, category)
+            print(Fore.GREEN, f"Normal work, confidence score {confidence_score}")
+
+        print(Fore.RESET, f"HPC class: {category}, confidence: {confidence.item()}")

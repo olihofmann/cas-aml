@@ -80,11 +80,11 @@ class BaselineNetwork(pl.LightningModule):
             "monitor": "Loss/valid"
         }
 
-    def load(self, model_path: str):
+    def load(self, model_path: str) -> None:
         checkpoint = torch.load(model_path)
         self.load_state_dict(checkpoint["state_dict"])
         self.eval()
 
     def predict(self, image):
         pred = self(image)
-        return pred.argmax(dim=1)
+        return pred.argmax(dim=1), torch.max(F.softmax(pred, dim=1))
