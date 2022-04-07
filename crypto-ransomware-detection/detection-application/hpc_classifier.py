@@ -16,10 +16,10 @@ class HpcClassifier:
     IDX_TO_CLASS = {0: "ransomware", 1: "benign"}
     IMAGE_FILE_NAME = "temp.jpg"
 
-    def __init__(self) -> None:
+    def __init__(self, model_path: str) -> None:
         self.transformer: GramianAngularField = GramianAngularField()
         self.model: BaselineNetwork = BaselineNetwork(number_of_classes=2, image_size=50)
-        self.model.load("../checkpoints/BI-GAF/best-checkpoint.ckpt")
+        self.model.load(model_path)
         self.temp_file = tempfile.NamedTemporaryFile()
         self.transformation = transforms.Compose([
             transforms.ToTensor(),

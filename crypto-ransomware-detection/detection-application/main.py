@@ -1,4 +1,4 @@
-
+import argparse
 import time
 
 from io import TextIOWrapper
@@ -17,10 +17,20 @@ def follow(file: TextIOWrapper):
         return line
 
 if __name__ == "__main__":
-    observation_data = list()
-    classifier: HpcClassifier = HpcClassifier()
+    parser: argparse.ArgumentParser = argparse.ArgumentParser(description="Ransomware detection app")
+    parser.add_argument("--csv_file_path", dest="csv_file_path", type=str, help="../data/detection_app/branch_instructions.csv")
+    parser.add_argument("--model_path", dest="model_path", type=str, help="../checkpoints/BI-GAF/best-checkpoint.ckpt")
+    args = parser.parse_args()
 
-    with open("../data/detection_app/branch_instructions.csv") as file:
+    print("============================")
+    print("  Ransomware Detection App  ")
+    print("============================")
+    print("Observation started...")
+
+    observation_data = list()
+    classifier: HpcClassifier = HpcClassifier(args.model_path)
+
+    with open(args.csv_file_path) as file:
         while True:
             line = follow(file=file)
             if line:
