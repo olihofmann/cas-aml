@@ -6,8 +6,6 @@ import tempfile
 
 from colorama import Fore
 from pyts.image import GramianAngularField
-from PIL import Image
-import torch
 from model import BaselineNetwork
 from torchvision import transforms
 
