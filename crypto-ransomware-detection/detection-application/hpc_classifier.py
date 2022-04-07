@@ -1,16 +1,24 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import uuid
+import skimage.io
 
+from colorama import Fore
 from pyts.image import GramianAngularField
 from PIL import Image
 from model import BaselineNetwork
 from torchvision import transforms
 
+
 class HpcClassifier:
-    DATASET_COLUMNS = ["time-interval", "counter-value", "event", "runtime", "percentage"]
+    DATASET_COLUMNS = ["index", "time-interval", "counter-value", "event", "runtime", "percentage"]
     IDX_TO_CLASS = {0: "ransomware", 1: "benign"}
+    IMAGE_FILE_NAME = "temp.jpg"
+
+    transformation = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225],)
+    ])
 
     def __init__(self) -> None:
         self.transformer: GramianAngularField = GramianAngularField()
@@ -27,9 +35,14 @@ class HpcClassifier:
 
         df_counter_value: pd.DataFrame = df[["counter-value"]].copy()
         transformed_time_series: np.ndarray = self._transform_to_image(df_counter_value)
-        image_time_series = Image.fromarray(transformed_time_series[0], mode="RGB")
-        plt.imsave(f"{uuid.uuid4()}.png", image_time_series)
-        
-        image_tensor = transforms.ToTensor()(image_time_series).unsqueeze_(0)
-        prediction = self.model.predict(image_tensor)
-        print(self.IDX_TO_CLASS[prediction.item()])
+
+        plt.imsave(self.IMAGE_FILE_NAME, transformed_time_series[0])
+        image = skimage.io.imread(self.IMAGE_FILE_NAME)
+        image = self.transformation(image)
+
+        prediction = self.model.predict(image.unsqueeze_(0))
+        category: str = self.IDX_TO_CLASS[prediction.item()]
+        if category == "benign":
+            print(Fore.GREEN, category)
+        else:
+            print(Fore.RED, category)
