@@ -1,3 +1,4 @@
+from matplotlib import rc_params_from_file
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -29,9 +30,18 @@ class HpcClassifier:
         flatten_time_series: np.ndarray = np.array([df_transform.values.flatten()])
         return self.transformer.fit_transform(flatten_time_series)
 
-    def classify(self, obersation_data: list):
-        df: pd.DataFrame = pd.DataFrame(obersation_data, columns=self.DATASET_COLUMNS)
+    def _convert_to_dataframe(self, observation_data: list):
+        df: pd.DataFrame = pd.DataFrame(observation_data)
+        df = df.drop([2, 6, 7], axis=1)
+        df = df.dropna(axis=1)
+        df = df.reset_index()
+        df.columns = self.DATASET_COLUMNS
         df["counter-value"] = pd.to_numeric(df["counter-value"])
+
+        return df
+
+    def classify(self, observation_data: list):
+        df: pd.DataFrame = self._convert_to_dataframe(observation_data)
 
         df_counter_value: pd.DataFrame = df[["counter-value"]].copy()
         transformed_time_series: np.ndarray = self._transform_to_image(df_counter_value)
