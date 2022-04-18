@@ -1,4 +1,5 @@
 import argparse
+from distutils.log import debug
 import time
 
 from io import TextIOWrapper
@@ -20,6 +21,7 @@ if __name__ == "__main__":
     parser: argparse.ArgumentParser = argparse.ArgumentParser(description="Ransomware detection app")
     parser.add_argument("--csv_file_path", dest="csv_file_path", type=str, help="../data/detection_app/branch_instructions.csv")
     parser.add_argument("--model_path", dest="model_path", type=str, help="../checkpoints/BI-GAF/best-checkpoint.ckpt")
+    parser.add_argument("--debug_mode", dest="debug_mode", type=bool, help="True or False", default=False)
     args = parser.parse_args()
 
     print("============================")
@@ -29,6 +31,7 @@ if __name__ == "__main__":
 
     observation_data = list()
     classifier: HpcClassifier = HpcClassifier(args.model_path)
+    debug_counter: int = 0
 
     with open(args.csv_file_path) as file:
         while True:
@@ -36,5 +39,15 @@ if __name__ == "__main__":
             if line:
                 observation_data.append(line.split(","))
                 if len(observation_data) == 50:
-                    classifier.classify(observation_data)
+                    attack_detected: bool = classifier.classify(observation_data)
                     observation_data.clear()
+
+                    if attack_detected:
+                        time.sleep(10)
+                    
+                    # Just for debbuging
+                    if debug_counter == 10:
+                        break
+
+                    if args.debug_mode:
+                        debug_counter += 1
