@@ -39,26 +39,29 @@ class HpcClassifier:
         return df[["counter-value"]].copy()
 
     def classify(self, observation_data: list) -> bool:
-        df_counter_value: pd.DataFrame = self._convert_to_dataframe(observation_data)
-        transformed_time_series: np.ndarray = self._transform_to_image(df_counter_value)
+        try:
+            df_counter_value: pd.DataFrame = self._convert_to_dataframe(observation_data)
+            transformed_time_series: np.ndarray = self._transform_to_image(df_counter_value)
 
-        filename: str = f"{self.temp_file.name}.jpg"
-        plt.imsave(filename, transformed_time_series[0])
-        image = skimage.io.imread(filename)
-        image = self.transformation(image)
+            filename: str = f"{self.temp_file.name}.jpg"
+            plt.imsave(filename, transformed_time_series[0])
+            image = skimage.io.imread(filename)
+            image = self.transformation(image)
 
-        prediction, confidence = self.model.predict(image.unsqueeze_(0))
-        confidence_score: float = confidence.item()
-        category: str = self.IDX_TO_CLASS[prediction.item()]
+            prediction, confidence = self.model.predict(image.unsqueeze_(0))
+            confidence_score: float = confidence.item()
+            category: str = self.IDX_TO_CLASS[prediction.item()]
 
-        if category == "ransomware" and confidence_score > 0.7:
-            self.ransomware_detection_counter += 1
+            if category == "ransomware" and confidence_score > 0.7:
+                self.ransomware_detection_counter += 1
 
-        attack_detected: bool = False
-        if self.ransomware_detection_counter > 3:
-            print(Back.RED, "Ransomware attack")
-            attack_detected = True
-        else:
-            print(Back.GREEN, "Normal work")
+            attack_detected: bool = False
+            if self.ransomware_detection_counter > 3:
+                print(Back.RED, "Ransomware attack")
+                attack_detected = True
+            else:
+                print(Back.GREEN, "Normal work")
 
-        return attack_detected
+            return attack_detected
+        except:
+            return False
