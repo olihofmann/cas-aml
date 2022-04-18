@@ -52,12 +52,13 @@ class HpcClassifier:
             confidence_score: float = confidence.item()
             category: str = self.IDX_TO_CLASS[prediction.item()]
 
-            if category == "ransomware" and confidence_score > 0.7:
+            if category == "ransomware" and confidence_score > 0.8:
                 self.ransomware_detection_counter += 1
 
             attack_detected: bool = False
             if self.ransomware_detection_counter > 3:
                 print(Back.RED, "Ransomware attack")
+                self.ransomware_detection_counter = 0
                 attack_detected = True
             else:
                 print(Back.GREEN, "Normal work")

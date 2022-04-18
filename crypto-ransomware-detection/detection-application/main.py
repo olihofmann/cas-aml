@@ -43,7 +43,7 @@ if __name__ == "__main__":
                     observation_data.clear()
 
                     if attack_detected:
-                        time.sleep(10)
+                        time.sleep(5)
                     
                     # Just for debbuging
                     if debug_counter == 10:
