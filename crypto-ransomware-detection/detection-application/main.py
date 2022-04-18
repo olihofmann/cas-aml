@@ -1,6 +1,7 @@
 import argparse
 from distutils.log import debug
 import time
+from colorama import Fore
 
 from io import TextIOWrapper
 
@@ -41,9 +42,6 @@ if __name__ == "__main__":
                 if len(observation_data) == 50:
                     attack_detected: bool = classifier.classify(observation_data)
                     observation_data.clear()
-
-                    if attack_detected:
-                        time.sleep(5)
                     
                     # Just for debbuging
                     if debug_counter == 10:

@@ -58,7 +58,6 @@ class HpcClassifier:
             attack_detected: bool = False
             if self.ransomware_detection_counter > 3:
                 print(Fore.RED, "Potential Crypto-Ransomware attack!!!!!!!!!!!!!")
-                self.ransomware_detection_counter = 0
                 attack_detected = True
             else:
                 print(Fore.GREEN, "Normal work")
