@@ -1,7 +1,5 @@
 import argparse
-from distutils.log import debug
 import time
-from colorama import Fore
 
 from io import TextIOWrapper
 
